@@ -1,29 +1,31 @@
 import React from "react";
 import { AudioRecorder } from "react-audio-voice-recorder";
+import { FFmpeg } from "@ffmpeg/ffmpeg";
 
 import "./App.css";
+
+const ffmpeg = new FFmpeg();
 
 /**
  * @dev This function converts a webm blob into mp3 blob with the help of ffmpeg.wasm
  */
 async function convertWebmToMp3(webmBlob: Blob): Promise<Blob> {
-  const FFmpeg = await import("@ffmpeg/ffmpeg");
-  const ffmpeg = FFmpeg.createFFmpeg({
-    log: false,
-    corePath: "/ffmpeg-core.js", // corepath 없을 경우 cdn에서 가져옴
-  });
-  await ffmpeg.load();
+  if (!ffmpeg.loaded) {
+    await ffmpeg.load({
+      coreURL: "/ffmpeg-core.js",
+      wasmURL: "/ffmpeg-core.wasm",
+    });
+  }
 
   const inputName = "input.webm";
   const downloadFileExtension = "mp3";
   const outputName = `output.${downloadFileExtension}`;
 
-  await ffmpeg.FS("writeFile", inputName, new Uint8Array(await webmBlob.arrayBuffer()));
+  await ffmpeg.writeFile(inputName, new Uint8Array(await webmBlob.arrayBuffer()));
+  await ffmpeg.exec(["-i", inputName, outputName]);
 
-  await ffmpeg.run("-i", inputName, outputName);
-
-  const outputData = ffmpeg.FS("readFile", outputName);
-  const outputBlob = new Blob([outputData.buffer], {
+  const outputData = await ffmpeg.readFile(outputName);
+  const outputBlob = new Blob([outputData], {
     type: `audio/${downloadFileExtension}`,
   });
 
