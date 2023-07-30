@@ -10,6 +10,32 @@ function App() {
     audio.src = url;
     audio.controls = true;
     document.body.appendChild(audio);
+
+    // upload audio file to server
+    const timestamp = Math.floor(Date.now() / 1000);
+    const fileName = `audio_${timestamp}.mp3`;
+    const formData = new FormData();
+
+    formData.append("audio", blob, fileName);
+
+    console.log("Uploading audio file: %s", fileName);
+
+    fetch(`/api/upload`, {
+      method: "POST",
+      headers: {
+        "Allow-Control-Allow-Origin": "*",
+      },
+      body: formData,
+    })
+      .then(async (res) => {
+        console.log("File uploaded");
+
+        console.log(await res.json());
+      })
+      .catch(async (err) => {
+        console.log("Failed to upload file");
+        console.error(await err.json());
+      });
   };
 
   return (
