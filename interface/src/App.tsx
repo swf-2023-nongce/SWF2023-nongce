@@ -3,8 +3,35 @@ import { AudioRecorder } from "react-audio-voice-recorder";
 
 import "./App.css";
 
+/**
+ * @dev This function converts a webm blob into mp3 blob with the help of ffmpeg.wasm
+ */
+async function convertWebmToMp3(webmBlob: Blob): Promise<Blob> {
+  const FFmpeg = await import("@ffmpeg/ffmpeg");
+  const ffmpeg = FFmpeg.createFFmpeg({
+    log: false,
+    corePath: "/ffmpeg-core.js", // corepath 없을 경우 cdn에서 가져옴
+  });
+  await ffmpeg.load();
+
+  const inputName = "input.webm";
+  const downloadFileExtension = "mp3";
+  const outputName = `output.${downloadFileExtension}`;
+
+  await ffmpeg.FS("writeFile", inputName, new Uint8Array(await webmBlob.arrayBuffer()));
+
+  await ffmpeg.run("-i", inputName, outputName);
+
+  const outputData = ffmpeg.FS("readFile", outputName);
+  const outputBlob = new Blob([outputData.buffer], {
+    type: `audio/${downloadFileExtension}`,
+  });
+
+  return outputBlob;
+}
+
 function App() {
-  const addAudioElement = (blob: Blob) => {
+  const addAudioElement = async (blob: Blob) => {
     const url = URL.createObjectURL(blob);
     const audio = document.createElement("audio");
     audio.src = url;
@@ -16,11 +43,11 @@ function App() {
     const fileName = `audio_${timestamp}.mp3`;
     const formData = new FormData();
 
-    formData.append("audio", blob, fileName);
+    formData.append("audio", await convertWebmToMp3(blob), fileName);
 
     console.log("Uploading audio file: %s", fileName);
 
-    fetch(`/api/upload`, {
+    await fetch(`/api/upload`, {
       method: "POST",
       headers: {
         "Allow-Control-Allow-Origin": "*",
