@@ -37,5 +37,4 @@ async def auth(file: UploadFile):
     """Authenticate user voice."""
     rate, signal = scipy.io.wavfile.read(file.file)
     features = utils.get_features(rate, signal)
-    print(features, features.shape)
     return features.tolist()[0]

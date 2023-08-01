@@ -101,6 +101,8 @@ def export(
 
 def main(_):
 
+    model =
+
     with torch.no_grad():
         export(model,
                onnx_filename=os.path.join(FLAGS.output_dir, 'model.onnx'),

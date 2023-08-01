@@ -33,7 +33,7 @@ def calculate_matmul(mat_a, mat_b):
     return torch.sum(mat_a.squeeze(-2) * mat_b.squeeze(-1), dim=2, keepdim=True)
 
 
-def get_features(rate, signal):
+def get_mfcc_features(rate, signal):
     """Get mfcc features and reduce by dtw"""
     mfcc_feat = mfcc(signal, rate)
     return preprocessing.scale(mfcc_feat)
