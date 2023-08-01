@@ -1,0 +1,24 @@
+{
+  "hardhat": {
+    "chainId": 33131,
+    "url": "http://localhost:9945",
+    "namedAccounts": {
+      "deployer": "0xF386C6E1bA02E1b827EC12990717C4Dc2af4F31a"
+    },
+    "contracts": {
+      "Verifier": "0x5AF64BC1f1a512e4949dEA49E6bfB0B20E8083C0",
+      "MockVerifier": "0x5593D2B10441c352ffc58e4293b7D73Ae874Ee2f"
+    }
+  },
+  "cronos:testnet": {
+    "chainId": 338,
+    "url": "https://evm-t3.cronos.org",
+    "namedAccounts": {
+      "deployer": "0xF386C6E1bA02E1b827EC12990717C4Dc2af4F31a"
+    },
+    "contracts": {
+      "Verifier": "0xffBE2f83e2d1f7ee2D19a368ff76c46a05a5d86E",
+      "MockVerifier": "0x3114C7fd5E862534a245B80c0F0104D5De8253E5"
+    }
+  }
+}
